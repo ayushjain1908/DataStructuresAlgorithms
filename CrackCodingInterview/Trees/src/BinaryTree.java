@@ -76,6 +76,28 @@ public class BinaryTree {
         return root;
     }
 
+      // Create sample tree 2
+//                             12
+//                           /   \
+//                          10    30
+//                               / \
+//                             25   26
+//
+//
+   public static TNode createSampleTree3(){
+       TNode root = new TNode(12);
+       TNode a = new TNode(10);
+       TNode b = new TNode(30);
+       TNode c = new TNode(25);
+       TNode d = new TNode(26);
+       root.setLeft(a);
+       root.setRight(b);
+       b.setLeft(c);
+       b.setRight(d);
+       return root;
+   }
+
+
     // Recursive InOrder Traversal
     public static void inOrderTraversal(TNode root){
         if(root != null){
@@ -253,6 +275,242 @@ public class BinaryTree {
         return 1 + leftSize + rightSize;
     }
 
+    // Sum of all Nodes
+    public static int sumOfNodes(TNode root){
+        if(root == null){
+            return 0;
+        }
+        int lSum = sumOfNodes(root.getLeft());
+        int rSum = sumOfNodes(root.getRight());
+        return (root.getData() + lSum + rSum);
+    }
+
+    // Count Leaves
+    public static int countLeaves(TNode root){
+        if(root == null){
+            return 0;
+        }
+        if(root.getLeft() == null && root.getRight() == null){
+            return 1;
+        }
+        int lCount = countLeaves(root.getLeft());
+        int rCount = countLeaves(root.getRight());
+        return lCount + rCount;
+    }
+
+    // Sum of Leaves
+    public static int sumOfLeaves(TNode root){
+        if(root == null){
+            return 0;
+        }
+        if(root.getLeft() == null && root.getRight() == null){
+            return root.getData();
+        }
+        int lSum = sumOfLeaves(root.getLeft());
+        int rSum = sumOfLeaves(root.getRight());
+        return lSum + rSum;
+    }
+
+    // Check if the node is a leaf node
+    public static boolean isLeaf(TNode node){
+        if(node== null){
+            return false;
+        }
+        if(node.getLeft() == null && node.getRight() == null ){
+            return true;
+        }
+        return false;
+    }
+
+    // Sum of left leaves
+    public static int sumOfLeftLeaves(TNode root){
+        int res = 0;
+        if(root == null){
+            return 0;
+        }
+        if(isLeaf(root.getLeft())){
+            res += root.getLeft().getData();
+        }
+        else{
+            res += sumOfLeftLeaves(root.getLeft());
+        }
+        res += sumOfLeftLeaves(root.getRight());
+        return res;
+    }
+
+    // Sum of right leaves
+    public static int sumOfRightLeaves(TNode root){
+        int res = 0;
+        if(root == null){
+            return 0;
+        }
+        if(isLeaf(root.getRight())){
+            res += root.getRight().getData();
+        }
+        else{
+            res += sumOfRightLeaves(root.getRight());
+        }
+        res += sumOfRightLeaves(root.getLeft());
+        return res;
+    }
+
+    // Left View of a Tree
+    public static void leftView(TNode root){
+        IntegerWrapper maxLevel = new IntegerWrapper();
+        maxLevel.value = -1;
+        leftViewUtil(root,0,maxLevel);
+    }
+    // Util for Left View of Tree
+    public static void leftViewUtil(TNode root,int level,IntegerWrapper maxLevel){
+        if(root == null){
+            return;
+        }
+        if(level > maxLevel.value){
+            maxLevel.value = level;
+            System.out.print(root.getData() + " ");
+        }
+        leftViewUtil(root.getLeft(),level + 1,maxLevel);
+        leftViewUtil(root.getRight(),level + 1,maxLevel);
+    }
+
+    // Left View of a tree using Level Order Traversal
+    public static void leftViewUsingLevelOrder(TNode root){
+        if(root == null){
+            return;
+        }
+        LinkedList<TNode> queue = new LinkedList<TNode>();
+        queue.add(root);
+        while(!queue.isEmpty()){
+            int count = queue.size();
+            TNode node = queue.remove();
+            count--;
+            System.out.print(node.getData() + " ");
+            if(node.getLeft() != null){
+                queue.add(node.getLeft());
+            }
+            if(node.getRight() != null){
+                queue.add(node.getRight());
+            }
+            while(count > 0){
+                node =  queue.remove();
+                if(node.getLeft() != null){
+                    queue.add(node.getLeft());
+                }
+                if(node.getRight() != null){
+                    queue.add(node.getRight());
+                }
+                count--;
+            }
+        }
+    }
+
+    // Right View of a Tree
+    public static void rightView(TNode root){
+        IntegerWrapper maxLevel = new IntegerWrapper();
+        maxLevel.value = -1;
+        rightViewUtil(root,0,maxLevel);
+    }
+    // Util for Right View of Tree
+    public static void rightViewUtil(TNode root,int level,IntegerWrapper maxLevel){
+        if(root == null){
+            return;
+        }
+        if(level > maxLevel.value){
+            maxLevel.value = level;
+            System.out.print(root.getData() + " ");
+        }
+        rightViewUtil(root.getRight(),level+1,maxLevel);
+        rightViewUtil(root.getLeft(),level + 1,maxLevel);
+    }
+
+    // Right View of a tree using Level Order Traversal
+    public static void rightViewUsingLevelOrder(TNode root){
+        if(root == null){
+            return;
+        }
+        LinkedList<TNode> queue = new LinkedList<TNode>();
+        queue.add(root);
+        while(!queue.isEmpty()){
+            int count = queue.size();
+            TNode node = queue.remove();
+            count--;
+            System.out.print(node.getData() + " ");
+            if(node.getRight() != null){
+                queue.add(node.getRight());
+            }
+            if(node.getLeft() != null){
+                queue.add(node.getLeft());
+            }
+
+            while(count > 0){
+                node =  queue.remove();
+                if(node.getRight() != null){
+                    queue.add(node.getRight());
+                }
+                if(node.getLeft() != null){
+                    queue.add(node.getLeft());
+                }
+                count--;
+            }
+        }
+    }
+
+    // Vertical Order of Tree , Print from left to right and top to bottom
+    public static void verticalOrder(TNode root){
+        if(root == null){
+            return;
+        }
+        HashMap<Integer,ArrayList<Integer>> vMap = new HashMap<>();
+        fillVerticalOrderMap(root,0,vMap);
+        for(Map.Entry<Integer,ArrayList<Integer>> entry : vMap.entrySet()){
+            ArrayList<Integer> l = entry.getValue();
+            System.out.print("Order " + entry.getKey() + " : ");
+            for(Integer i : l){
+                System.out.print(i + " ");
+            }
+            System.out.println();
+        }
+
+    }
+
+    // Helper Method to fill up the Vertical Order Map
+    private static void fillVerticalOrderMap(TNode root,int hd,HashMap<Integer,ArrayList<Integer>> vMap){
+        LinkedList<QueueEntry> queue = new LinkedList<>();
+        QueueEntry entry = new QueueEntry(hd,root);
+        queue.add(entry);
+        while(!queue.isEmpty()){
+           entry = queue.remove();
+            TNode node = entry.node;
+            int dist = entry.hd;
+            ArrayList<Integer> list = vMap.get(dist);
+            if(list == null){
+                list = new ArrayList<>();
+                list.add(node.getData());
+                vMap.put(dist,list);
+            }
+            else{
+                list.add(node.getData());
+                vMap.put(dist,list);
+            }
+            if(node.getLeft() != null){
+                queue.add(new QueueEntry(dist-1,node.getLeft()));
+            }
+            if(node.getRight() != null){
+                queue.add(new QueueEntry(dist + 1,node.getRight()));
+            }
+        }
+    }
+
+
+    // Helper Class
+    static class QueueEntry{
+        int hd;
+        TNode node;
+        QueueEntry(int hd,TNode node){
+            this.hd = hd;
+            this.node = node;
+        }
+    }
     // Driver Method AKA Main Method
     public static void main(String[] args){
         BinaryTree tree = new BinaryTree();
@@ -275,9 +533,37 @@ public class BinaryTree {
 //        System.out.println("Minimum Depth of tree using Level Order Traversal " + minDepthUsingLevelOrderTraversal(tree.getRoot()));
 //        System.out.println("Minimum Depth of tree using recursion " + minDepth(tree.getRoot()));
 //        System.out.println("Minimum Depth of tree2 using recursion " + minDepth(tree2.getRoot()));
-        System.out.println("Size of tree " + sizeOfTree(tree.getRoot()));
-        System.out.println("Size of tree2 " + sizeOfTree(tree2.getRoot()));
-
+//        System.out.println("Size of tree " + sizeOfTree(tree.getRoot()));
+//        System.out.println("Size of tree2 " + sizeOfTree(tree2.getRoot()));
+//        System.out.println("Sum of nodes in tree " + sumOfNodes(tree.getRoot()));
+//        System.out.println("Sum of nodes in tree2 " + sumOfNodes(tree2.getRoot()));
+//        System.out.println("Number of leaves in tree " + countLeaves(tree.getRoot()));
+//        System.out.println("Number of leaves in tree2 " + countLeaves(tree2.getRoot()));
+//        System.out.println("Sum of  leaves in tree " + sumOfLeaves(tree.getRoot()));
+//        System.out.println("Sum of leaves in tree2 " + sumOfLeaves(tree2.getRoot()));
+//        System.out.println("Sum of  left leaves in tree " + sumOfLeftLeaves(tree.getRoot()));
+//        System.out.println("Sum of left leaves in tree2 " + sumOfLeftLeaves(tree2.getRoot()));
+//        System.out.println("Sum of  right leaves in tree " + sumOfRightLeaves(tree.getRoot()));
+//        System.out.println("Sum of right leaves in tree2 " + sumOfRightLeaves(tree2.getRoot()));
+//        BinaryTree tree3 = new BinaryTree();
+//        tree3.setRoot(createSampleTree3());
+//        System.out.println("Left view of tree3 ");
+//        System.out.println();
+//        leftView(tree3.getRoot());
+//        System.out.println();
+//        System.out.println("Right View of tree2 ");
+//        System.out.println();
+//        rightView(tree2.getRoot());
+//        System.out.println();
+//        System.out.println("Left view of tree3 using Level Order ");
+//        System.out.println();
+//        leftViewUsingLevelOrder(tree3.getRoot());
+//        System.out.println();
+//        System.out.println("Right View of tree2 using Level Order ");
+//        System.out.println();
+//        rightViewUsingLevelOrder(tree2.getRoot());
+        System.out.println("Vertical Order of tree ");
+        verticalOrder(tree.getRoot());
 
     }
 }
