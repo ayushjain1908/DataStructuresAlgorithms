@@ -76,7 +76,7 @@ public class BinaryTree {
         return root;
     }
 
-      // Create sample tree 2
+      // Create sample tree 3
 //                             12
 //                           /   \
 //                          10    30
@@ -456,15 +456,17 @@ public class BinaryTree {
     }
 
     // Vertical Order of Tree , Print from left to right and top to bottom
+    //  TreeMap instead of HashMap must be used because TreeMap puts and gets the keys in sorted order which is required for
+    //  left to right printing
     public static void verticalOrder(TNode root){
         if(root == null){
             return;
         }
-        HashMap<Integer,ArrayList<Integer>> vMap = new HashMap<>();
+        TreeMap<Integer,ArrayList<Integer>> vMap = new TreeMap<>();
         fillVerticalOrderMap(root,0,vMap);
         for(Map.Entry<Integer,ArrayList<Integer>> entry : vMap.entrySet()){
             ArrayList<Integer> l = entry.getValue();
-            System.out.print("Order " + entry.getKey() + " : ");
+            System.out.print("Horizontal Distance " + entry.getKey() + " : ");
             for(Integer i : l){
                 System.out.print(i + " ");
             }
@@ -473,8 +475,8 @@ public class BinaryTree {
 
     }
 
-    // Helper Method to fill up the Vertical Order Map
-    private static void fillVerticalOrderMap(TNode root,int hd,HashMap<Integer,ArrayList<Integer>> vMap){
+    // Helper Method to fill up the Vertical Order Map,Only Level Order Traversal can print the result in correct order
+    private static void fillVerticalOrderMap(TNode root,int hd,TreeMap<Integer,ArrayList<Integer>> vMap){
         LinkedList<QueueEntry> queue = new LinkedList<>();
         QueueEntry entry = new QueueEntry(hd,root);
         queue.add(entry);
@@ -501,6 +503,175 @@ public class BinaryTree {
         }
     }
 
+    // Vertical Sum of a tree
+    public static void verticalSum(TNode root){
+        HashMap<Integer,Integer> map = new HashMap<>();
+        verticalSumUtil(root,0,map);
+        System.out.println(map.entrySet());
+    }
+    // Util for Vertical Sum
+    public static void verticalSumUtil(TNode root,int hd,HashMap<Integer,Integer> map){
+        if(root == null){
+            return;
+        }
+        if(map.get(hd) == null){
+            map.put(hd,root.getData());
+        }
+        else{
+            map.put(hd,root.getData() + map.get(hd));
+        }
+        verticalSumUtil(root.getLeft(),hd - 1,map);
+        verticalSumUtil(root.getRight(),hd + 1,map);
+
+    }
+
+    // Bottom View of Tree
+    public static void bottomViewUsingLevelOrder(TNode root){
+        TreeMap<Integer,Integer> map = new TreeMap<>();
+        bottomViewUsingLevelOrderUtil(root,0,map);
+//        System.out.println(map.entrySet());
+        for(Map.Entry<Integer,Integer> entry : map.entrySet()){
+            System.out.print(entry.getValue() + " ");
+        }
+    }
+    // Util for Bottom View
+    private static void bottomViewUsingLevelOrderUtil(TNode root,int hd,TreeMap<Integer,Integer> map){
+        if(root == null){
+            return;
+        }
+        LinkedList<QueueEntry> queue = new LinkedList<>();
+        queue.add(new QueueEntry(hd,root));
+        while(!queue.isEmpty()){
+            QueueEntry entry = queue.remove();
+            TNode node = entry.node;
+            hd = entry.hd;
+            map.put(hd,node.getData());
+            if(node.getLeft() != null){
+                queue.add(new QueueEntry(hd - 1,node.getLeft()));
+            }
+            if(node.getRight() != null){
+                queue.add(new QueueEntry(hd + 1, node.getRight()));
+            }
+        }
+    }
+
+    // Top View of Tree,Not Printing from left to right
+    public static void topViewAnyOrderUsingLevelOrder(TNode root){
+        if(root == null){
+            return;
+        }
+        int hd = 0;
+        HashSet<Integer> set = new HashSet<>();
+        LinkedList<QueueEntry> queue = new LinkedList<>();
+        queue.add(new QueueEntry(hd,root));
+        while(!queue.isEmpty()){
+            QueueEntry entry = queue.remove();
+            TNode node = entry.node;
+            hd = entry.hd;
+            if(!set.contains(hd)){
+                System.out.print(node.getData() + " ");
+                set.add(hd);
+            }
+            if(node.getLeft() != null){
+                queue.add(new QueueEntry(hd - 1,node.getLeft()));
+            }
+            if(node.getRight() != null){
+                queue.add(new QueueEntry(hd + 1, node.getRight()));
+            }
+        }
+    }
+
+    // Top View of Tree Using Level Order,printing from left to right
+    public static void topViewUsingLevelOrder(TNode root){
+        if(root == null)
+            return;
+        TreeMap<Integer,Integer> map = new TreeMap<>();
+        topViewUsingLevelOrderUtil(root,0,map);
+        for(Map.Entry<Integer,Integer> entry : map.entrySet()){
+            System.out.print(entry.getValue() + " ");
+        }
+    }
+
+    // Util for Top View Using Level Order Traversal
+    private static void topViewUsingLevelOrderUtil(TNode root,int hd,TreeMap<Integer,Integer> map){
+        LinkedList<QueueEntry> queue = new LinkedList<>();
+        queue.add(new QueueEntry(hd,root));
+        while(!queue.isEmpty()){
+            QueueEntry entry = queue.remove();
+            TNode node = entry.node;
+            hd = entry.hd;
+            if(!map.containsKey(hd)){
+                map.put(hd,node.getData());
+            }
+            if(node.getLeft() != null){
+                queue.add(new QueueEntry(hd - 1,node.getLeft()));
+            }
+            if(node.getRight() != null){
+                queue.add(new QueueEntry(hd + 1,node.getRight()));
+            }
+        }
+
+    }
+
+    // Bottom View Of Tree Using DFS
+    public static void bottomViewUsingDFS(TNode root){
+        if(root == null){
+            return;
+        }
+        TreeMap<Integer,MapEntry> map = new TreeMap<>();
+        bottomViewUsingDFSUtil(root,0,0,map);
+        for(Map.Entry<Integer,MapEntry> entry : map.entrySet()){
+            System.out.print(entry.getValue().nodeValue + " ");
+        }
+    }
+    // Util for Bottom View Of Tree Using DFS
+    private  static void bottomViewUsingDFSUtil(TNode root,int hd,int level,TreeMap<Integer,MapEntry> map){
+        if(root == null){
+            return;
+        }
+        MapEntry entry = map.get(hd);
+        if(entry == null){
+            map.put(hd,new MapEntry(level,root.getData()));
+        }
+        else{
+            if(entry.nodeLevel <= level){
+                map.put(hd,new MapEntry(level,root.getData()));
+            }
+        }
+        bottomViewUsingDFSUtil(root.getLeft(),hd - 1,level + 1,map);
+        bottomViewUsingDFSUtil(root.getRight(),hd + 1,level + 1,map);
+
+    }
+
+    // Top View Of Tree Using DFS
+    public static void topViewUsingDFS(TNode root){
+        if(root == null){
+            return;
+        }
+        TreeMap<Integer,MapEntry> map = new TreeMap<>();
+        topViewUsingDFSUtil(root,0,0,map);
+        for(Map.Entry<Integer,MapEntry> entry : map.entrySet()){
+            System.out.print(entry.getValue().nodeValue + " ");
+        }
+    }
+    // Util for Top View Of Tree Using DFS
+    private  static void topViewUsingDFSUtil(TNode root,int hd,int level,TreeMap<Integer,MapEntry> map){
+        if(root == null){
+            return;
+        }
+        MapEntry entry = map.get(hd);
+        if(entry == null){
+            map.put(hd,new MapEntry(level,root.getData()));
+        }
+        else{
+            if(entry.nodeLevel >= level){
+                map.put(hd,new MapEntry(level,root.getData()));
+            }
+        }
+        topViewUsingDFSUtil(root.getLeft(),hd - 1,level + 1,map);
+        topViewUsingDFSUtil(root.getRight(),hd + 1,level + 1,map);
+
+    }
 
     // Helper Class
     static class QueueEntry{
@@ -511,6 +682,17 @@ public class BinaryTree {
             this.node = node;
         }
     }
+    // Helper Class
+    static class MapEntry{
+        int nodeValue;
+        int nodeLevel;
+        MapEntry(int nodeLevel,int nodeValue){
+            this.nodeLevel = nodeLevel;
+            this.nodeValue = nodeValue;
+        }
+    }
+
+
     // Driver Method AKA Main Method
     public static void main(String[] args){
         BinaryTree tree = new BinaryTree();
@@ -562,8 +744,28 @@ public class BinaryTree {
 //        System.out.println("Right View of tree2 using Level Order ");
 //        System.out.println();
 //        rightViewUsingLevelOrder(tree2.getRoot());
-        System.out.println("Vertical Order of tree ");
-        verticalOrder(tree.getRoot());
+//        System.out.println("Vertical Order of tree ");
+//        verticalOrder(tree.getRoot());
+//        System.out.println("Vertical Sum of tree ");
+//        verticalSum(tree.getRoot());
+//        System.out.println("Bottom View of tree");
+//        bottomViewUsingLevelOrder(tree.getRoot());
+//        System.out.println("Top View of tree using Level Order");
+//        topViewUsingLevelOrder(tree.getRoot());
+//        System.out.println();
+//        System.out.println("Top View of tree2 using Level Order");
+//        topViewUsingLevelOrder(tree2.getRoot());
+
+//        System.out.println("Bottom View of tree using DFS ");
+//        bottomViewUsingDFS(tree.getRoot());
+//        System.out.println();
+//        System.out.println("Bottom View of tree2 using DFS ");
+//        bottomViewUsingDFS(tree2.root);
+        System.out.println("Top View of tree using DFS ");
+        topViewUsingDFS(tree.getRoot());
+        System.out.println();
+        System.out.println("Top View of tree2 using DFS ");
+        topViewUsingDFS(tree2.root);
 
     }
 }
